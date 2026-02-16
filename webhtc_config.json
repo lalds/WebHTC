@@ -1,0 +1,49 @@
+{
+    "network": {
+        "vmt_ip": "127.0.0.1",
+        "vmt_port": 39570
+    },
+    "camera": {
+        "device_id": 1,
+        "width": 640,
+        "height": 480,
+        "fps": 60,
+        "flip_horizontal": true
+    },
+    "tracking": {
+        "mode": "Full Body",
+        "use_fingers": false,
+        "model_complexity": 0,
+        "min_detection_confidence": 0.5,
+        "min_tracking_confidence": 0.5,
+        "smooth_factor": 0.56,
+        "static_image_mode": false
+    },
+    "visuals": {
+        "show_skeleton": true,
+        "neon_style": true,
+        "show_hud": true,
+        "language": "RU",
+        "theme": "Terminal",
+        "frame_reduction": 1
+    },
+    "calibration": {
+        "scale": 3.0,
+        "offset_x": 0.0,
+        "offset_y": 0.04,
+        "offset_z": -0.01,
+        "rotation_y": 180.0
+    },
+    "trackers": {
+        "enable_head": true,
+        "enable_hands": true,
+        "enable_waist": true,
+        "head_index": 0,
+        "left_hand_index": 1,
+        "right_hand_index": 2,
+        "waist_index": 3
+    },
+    "system": {
+        "first_run": false
+    }
+}

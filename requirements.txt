@@ -1,3 +1,7 @@
 opencv-python
 mediapipe
 python-osc
+PySide6
+psutil
+numpy
+sv_ttk
