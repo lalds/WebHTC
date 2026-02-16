@@ -178,6 +178,7 @@ class WebHTCApp(QMainWindow):
         self.sys_block.main_layout.addWidget(QLabel(f"{self.t['cam_source']}:"))
         self.cam_list = QComboBox()
         self.detect_cams()
+        self.cam_list.currentIndexChanged.connect(lambda i: self.cfg.set('camera', 'device_id', self.cam_list.itemData(i)))
         self.sys_block.main_layout.addWidget(self.cam_list)
         
         # Manual Wizard Trigger
@@ -297,11 +298,25 @@ class WebHTCApp(QMainWindow):
             elif key in ['offset_y', 'offset_z']: setattr(self.engine, key, f)
 
     def detect_cams(self):
+        self.cam_list.blockSignals(True)
         self.cam_list.clear()
-        for i in range(3):
+        # Scan more indices for robustness
+        for i in range(5):
             cap = cv2.VideoCapture(i)
-            if cap.isOpened(): self.cam_list.addItem(f"CAM_NODE_{i}", i); cap.release()
-        self.cam_list.setCurrentIndex(self.cfg.get('camera', 'device_id'))
+            if cap.isOpened(): 
+                self.cam_list.addItem(f"CAM_NODE_{i}", i)
+                cap.release()
+        
+        target_id = self.cfg.get('camera', 'device_id')
+        idx = self.cam_list.findData(target_id)
+        if idx != -1:
+            self.cam_list.setCurrentIndex(idx)
+        else:
+            self.cam_list.setCurrentIndex(0)
+        self.cam_list.blockSignals(False)
+        
+        if self.cam_list.count() == 0:
+            self.cam_list.addItem("NO_CAMERA_FOUND", -1)
 
     def switch_lang(self):
         self.cfg.set('visuals', 'language', "RU" if self.lang == "EN" else "EN")
