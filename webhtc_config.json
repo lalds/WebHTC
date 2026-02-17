@@ -14,24 +14,24 @@
         "mode": "Full Body",
         "use_fingers": false,
         "model_complexity": 0,
-        "min_detection_confidence": 0.5,
-        "min_tracking_confidence": 0.5,
-        "smooth_factor": 0.55,
+        "min_detection_confidence": 0.77,
+        "min_tracking_confidence": 0.75,
+        "smooth_factor": 0.05,
         "static_image_mode": false
     },
     "visuals": {
         "show_skeleton": true,
         "neon_style": true,
         "show_hud": true,
-        "language": "RU",
+        "language": "EN",
         "theme": "Terminal",
         "frame_reduction": 1
     },
     "calibration": {
-        "scale": 3.0,
+        "scale": 1.1912948602338154,
         "offset_x": 0.0,
-        "offset_y": 0.04,
-        "offset_z": -0.01,
+        "offset_y": 1.0,
+        "offset_z": -0.5,
         "rotation_y": 180.0
     },
     "trackers": {

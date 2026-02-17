@@ -9,8 +9,8 @@ import time
 from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                              QHBoxLayout, QLabel, QPushButton, QSlider, 
                              QStackedWidget, QFrame, QCheckBox, QComboBox, 
-                             QLineEdit, QScrollArea, QMessageBox)
-from PySide6.QtCore import Qt, QSize, Slot, QTimer
+                             QLineEdit, QScrollArea, QMessageBox, QPlainTextEdit)
+from PySide6.QtCore import Qt, QSize, Slot, QTimer, Signal
 from PySide6.QtGui import QImage, QPixmap, QColor, QFont, QPalette
 
 from config_manager import ConfigManager
@@ -118,6 +118,29 @@ class WebHTCApp(QMainWindow):
         self.add_slider(qc_layout, self.t["depth_off"], -2.0, 1.0, 'calibration', 'offset_z')
         self.calib_block.main_layout.addLayout(qc_layout)
         left_col.addWidget(self.calib_block)
+        
+        # Smart Calib Button
+        self.smart_calib_btn = QPushButton(f"⚡ {self.t['smart_calib']}")
+        self.smart_calib_btn.setMinimumHeight(45)
+        self.smart_calib_btn.clicked.connect(self.trigger_smart_calib)
+        self.smart_calib_btn.setStyleSheet(f"border-color: {self.theme['accent']}; color: {self.theme['accent']}; font-size: 14px; margin-top: 5px;")
+        left_col.addWidget(self.smart_calib_btn)
+        
+        # Console Block
+        self.console_block = UIBlock(self.t["console_log"], self.theme)
+        self.console_out = QPlainTextEdit()
+        self.console_out.setReadOnly(True)
+        self.console_out.setFixedHeight(120)
+        self.console_out.setStyleSheet(f"""
+            background-color: {self.theme['bg']}; 
+            color: {self.theme['text']}; 
+            border: none; 
+            font-size: 10px;
+            font-family: 'Consolas', monospace;
+        """)
+        self.console_block.main_layout.addWidget(self.console_out)
+        left_col.addWidget(self.console_block)
+        
         main_hud.addLayout(left_col, 2)
         
         # RIGHT COLUMN (SCROLLABLE SETTINGS)
@@ -296,6 +319,45 @@ class WebHTCApp(QMainWindow):
         if self.engine:
             if key == 'scale': self.engine.scale = f
             elif key in ['offset_y', 'offset_z']: setattr(self.engine, key, f)
+            elif key == 'smooth_factor':
+                min_cutoff = max(0.01, 1.5 * (1.1 - f))
+                for filter_obj in self.engine.filters.values():
+                    filter_obj.min_cutoff = min_cutoff
+
+    def trigger_smart_calib(self):
+        if self.engine:
+            self.engine.start_calibration()
+            self.smart_calib_btn.setEnabled(False)
+
+    def on_calib_status(self, text_key, n):
+        text = self.t.get(text_key, text_key).replace("{n}", str(n))
+        self.on_status(text, self.theme['accent'])
+
+    def on_calib_done(self, s, y, z):
+        self.cfg.set('calibration', 'scale', s)
+        self.cfg.set('calibration', 'offset_y', y)
+        self.cfg.set('calibration', 'offset_z', z)
+        self.cfg.save()
+        self.smart_calib_btn.setEnabled(True)
+        # We need to refresh UI sliders manually or just restart engine
+        # For simplicity, let's just update engine values since they are already set inside engine
+        QMessageBox.information(self, "System", self.t["calib_success"])
+        # Re-sync UI (quick and dirty)
+        sys.exit() # Restart to apply all new calibrated values to sliders
+
+    def add_log(self, tag, msg):
+        timestamp = time.strftime("%H:%M:%S")
+        color = self.theme['accent']
+        if tag == "WARN": color = "#ffaa00"
+        elif tag == "ERR": color = "#ff5555"
+        
+        formatted = f'<span style="color: {self.theme["faded"]}">{timestamp}</span> ' \
+                    f'<span style="color: {color}">[{tag}]</span> {msg}'
+        self.console_out.appendHtml(formatted)
+        # Scroll to bottom
+        self.console_out.verticalScrollBar().setValue(
+            self.console_out.verticalScrollBar().maximum()
+        )
 
     def detect_cams(self):
         self.cam_list.blockSignals(True)
@@ -335,7 +397,11 @@ class WebHTCApp(QMainWindow):
         self.engine.frame_ready.connect(self.update_video)
         self.engine.status_changed.connect(self.on_status)
         self.engine.fps_updated.connect(lambda f: self.fps_lbl.setText(f"FPS: {f:02d}"))
+        self.engine.calib_status.connect(self.on_calib_status)
+        self.engine.calib_done.connect(self.on_calib_done)
+        self.engine.log_msg.connect(self.add_log)
         self.engine.start()
+        self.add_log("SYS", "Tracking Engine Started")
 
     def reboot_engine(self):
         self.cfg.save()
@@ -357,7 +423,9 @@ class WebHTCApp(QMainWindow):
         self.status_lbl.setStyleSheet(f"color: {color}; font-weight: bold;")
 
     def closeEvent(self, ev):
-        if self.engine: self.engine.stop()
+        if self.engine:
+            self.engine.stop()
+            self.engine.wait(1000) # Wait up to 1s for clean exit
         self.cfg.save()
         super().closeEvent(ev)
 

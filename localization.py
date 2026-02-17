@@ -39,7 +39,11 @@ TRANSLATIONS = {
         "boot_init": "INITIALIZING SYSTEM...",
         "boot_check": "CHECKING SUBSYSTEM: ",
         "boot_done": "SYSTEM STABLE. READY.",
-        "rerun_wizard": "RE-RUN SETUP WIZARD"
+        "rerun_wizard": "RE-RUN SETUP WIZARD",
+        "smart_calib": "SMART AUTO-CALIBRATION",
+        "calib_countdown": "GET READY: {n}s",
+        "calib_success": "CALIBRATION COMPLETE!",
+        "console_log": "SYSTEM LOGS"
     },
     "RU": {
         "title": "WebHTC: Доступный XR",
@@ -81,6 +85,10 @@ TRANSLATIONS = {
         "boot_init": "ИНИЦИАЛИЗАЦИЯ СИСТЕМЫ...",
         "boot_check": "ПРОВЕРКА ПОДСИСТЕМЫ: ",
         "boot_done": "СИСТЕМА СТАБИЛЬНА. ГОТОВО.",
-        "rerun_wizard": "ПЕРЕЗАПУСТИТЬ МАСТЕР НАСТРОЙКИ"
+        "rerun_wizard": "ПЕРЕЗАПУСТИТЬ МАСТЕР НАСТРОЙКИ",
+        "smart_calib": "УМНАЯ АВТО-КАЛИБРОВКА",
+        "calib_countdown": "ПРИГОТОВЬТЕСЬ: {n}с",
+        "calib_success": "КАЛИБРОВКА ЗАВЕРШЕНА!",
+        "console_log": "СИСТЕМНЫЕ ЛОГИ"
     }
 }
