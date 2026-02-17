@@ -242,7 +242,7 @@ class SettingsGUI:
     def reset_defaults(self):
         """Reset all settings to defaults"""
         if messagebox.askyesno("Reset", "Reset all settings to defaults?"):
-            from config_manager import DEFAULT_CONFIG
+            from core.config_manager import DEFAULT_CONFIG
             self.cfg.config = DEFAULT_CONFIG.copy()
             self.cfg.save()
             self.root.destroy()

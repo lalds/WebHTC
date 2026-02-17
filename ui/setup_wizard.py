@@ -8,8 +8,8 @@ from PySide6.QtWidgets import (QDialog, QVBoxLayout, QLabel, QPushButton,
 from PySide6.QtCore import Qt, QUrl
 from PySide6.QtGui import QDesktopServices
 
-from diagnostics import SystemDiagnostics
-from localization import TRANSLATIONS
+from core.diagnostics import SystemDiagnostics
+from ui.localization import TRANSLATIONS
 
 # --- WIZARD THEME ---
 THEME = {
@@ -162,7 +162,7 @@ class SetupWizard(QDialog):
 
 if __name__ == "__main__":
     from PySide6.QtWidgets import QApplication
-    from config_manager import ConfigManager
+    from core.config_manager import ConfigManager
     app = QApplication(sys.argv)
     cfg = ConfigManager()
     w = SetupWizard(cfg)

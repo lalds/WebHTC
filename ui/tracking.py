@@ -13,11 +13,11 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
 from PySide6.QtCore import Qt, QSize, Slot, QTimer, Signal
 from PySide6.QtGui import QImage, QPixmap, QColor, QFont, QPalette
 
-from config_manager import ConfigManager
-from tracking_engine import TrackingEngine
-from localization import TRANSLATIONS
-from boot_sequence import BootSplash
-from setup_wizard import SetupWizard
+from core.config_manager import ConfigManager
+from core.tracking_engine import TrackingEngine
+from ui.localization import TRANSLATIONS
+from core.boot_sequence import BootSplash
+from ui.setup_wizard import SetupWizard
 
 # --- THEME DEFINITIONS ---
 # ... (rest of the file remains same, just replacing imports and parts of WebHTCApp)

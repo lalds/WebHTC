@@ -7,7 +7,7 @@ import cv2
 import psutil
 import platform
 import os
-from localization import TRANSLATIONS
+from ui.localization import TRANSLATIONS
 
 class SystemDiagnostics:
     def __init__(self, lang="EN"):

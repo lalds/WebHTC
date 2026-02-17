@@ -9,8 +9,8 @@ from PySide6.QtWidgets import (QDialog, QVBoxLayout, QLabel, QProgressBar,
 from PySide6.QtCore import Qt, QTimer, Signal, Slot
 from PySide6.QtGui import QFont, QColor
 
-from diagnostics import SystemDiagnostics
-from localization import TRANSLATIONS
+from core.diagnostics import SystemDiagnostics
+from ui.localization import TRANSLATIONS
 
 class BootSplash(QDialog):
     finished = Signal()
@@ -116,7 +116,7 @@ class BootSplash(QDialog):
 
 if __name__ == "__main__":
     from PySide6.QtWidgets import QApplication
-    from config_manager import ConfigManager
+    from core.config_manager import ConfigManager
     app = QApplication(sys.argv)
     cfg = ConfigManager()
     splash = BootSplash(cfg)
