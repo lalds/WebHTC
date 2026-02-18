@@ -385,8 +385,8 @@ class TrackingEngine(QThread):
                         self.send_vmc('RightHand', p_r)
 
                     if self.cfg.get('visuals', 'show_skeleton'):
-                        cv2.circle(frame, (int(lms[15]*640), int(lms[15]*480)), 6, (0, 255, 0), -1)
-                        cv2.circle(frame, (int(lms[16]*640), int(lms[16]*480)), 6, (0, 255, 0), -1)
+                        cv2.circle(frame, (int(lms[15].x*640), int(lms[15].y*480)), 6, (0, 255, 0), -1)
+                        cv2.circle(frame, (int(lms[16].x*640), int(lms[16].y*480)), 6, (0, 255, 0), -1)
 
                 # Calibration
                 if self.calibrating and (time.time() - self.calib_start_time) >= 3.0:

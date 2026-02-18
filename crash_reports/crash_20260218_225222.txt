@@ -1,0 +1,25 @@
+============================================================
+CRASH REPORT - WebHTC Pro
+============================================================
+
+Timestamp: 2026-02-18T22:52:22.778218
+Python Version: 3.10.9 (tags/v3.10.9:1dd9be6, Dec  6 2022, 20:01:21) [MSC v.1934 64 bit (AMD64)]
+Platform: win32
+
+------------------------------------------------------------
+EXCEPTION INFO
+------------------------------------------------------------
+Type: TypeError
+Value: unsupported operand type(s) for *: 'NormalizedLandmark' and 'int'
+
+------------------------------------------------------------
+TRACEBACK
+------------------------------------------------------------
+Traceback (most recent call last):
+  File "A:\UnityProjects\WebHTC\core\tracking_engine.py", line 388, in run
+    cv2.circle(frame, (int(lms[15]*640), int(lms[15]*480)), 6, (0, 255, 0), -1)
+TypeError: unsupported operand type(s) for *: 'NormalizedLandmark' and 'int'
+
+============================================================
+END OF REPORT
+============================================================
