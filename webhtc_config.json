@@ -14,10 +14,10 @@
         "flip_horizontal": true
     },
     "tracking": {
-        "mode": "Upper Body",
+        "mode": "Full Body",
         "use_fingers": false,
-        "model_complexity": 0,
-        "min_detection_confidence": 0.77,
+        "model_complexity": 2,
+        "min_detection_confidence": 0.71,
         "min_tracking_confidence": 0.75,
         "smooth_factor": 0.57,
         "static_image_mode": false
@@ -27,7 +27,7 @@
         "neon_style": true,
         "show_hud": true,
         "language": "EN",
-        "theme": "Terminal",
+        "theme": "Void",
         "frame_reduction": 1,
         "overlay_mode": false,
         "show_tracker_overlay": true
