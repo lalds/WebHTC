@@ -10,10 +10,10 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QHBoxLayout, QLabel, QPushButton, QSlider,
                              QStackedWidget, QFrame, QCheckBox, QComboBox,
                              QLineEdit, QScrollArea, QMessageBox, QPlainTextEdit,
-                             QSystemTrayIcon, QMenu, QAction, QShortcut, QDialog,
-                             QGridLayout, QDoubleSpinBox, QGroupBox)
+                             QSystemTrayIcon, QMenu, QDialog,
+                             QGridLayout, QDoubleSpinBox, QGroupBox, QStyle)
 from PySide6.QtCore import Qt, QSize, Slot, QTimer, Signal, QPoint
-from PySide6.QtGui import QImage, QPixmap, QColor, QFont, QPalette, QKeySequence, QIcon
+from PySide6.QtGui import QImage, QPixmap, QColor, QFont, QPalette, QKeySequence, QIcon, QAction, QShortcut
 
 from core.config_manager import ConfigManager
 from core.tracking_engine import TrackingEngine

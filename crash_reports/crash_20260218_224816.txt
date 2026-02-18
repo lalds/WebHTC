@@ -1,0 +1,27 @@
+============================================================
+CRASH REPORT - WebHTC Pro
+============================================================
+
+Timestamp: 2026-02-18T22:48:16.082844
+Python Version: 3.10.9 (tags/v3.10.9:1dd9be6, Dec  6 2022, 20:01:21) [MSC v.1934 64 bit (AMD64)]
+Platform: win32
+
+------------------------------------------------------------
+EXCEPTION INFO
+------------------------------------------------------------
+Type: ImportError
+Value: cannot import name 'QAction' from 'PySide6.QtWidgets' (C:\Users\angel\AppData\Local\Programs\Python\Python310\lib\site-packages\PySide6\QtWidgets.pyd)
+
+------------------------------------------------------------
+TRACEBACK
+------------------------------------------------------------
+Traceback (most recent call last):
+  File "A:\UnityProjects\WebHTC\main.py", line 17, in <module>
+    from ui.tracking import WebHTCApp
+  File "A:\UnityProjects\WebHTC\ui\tracking.py", line 9, in <module>
+    from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
+ImportError: cannot import name 'QAction' from 'PySide6.QtWidgets' (C:\Users\angel\AppData\Local\Programs\Python\Python310\lib\site-packages\PySide6\QtWidgets.pyd)
+
+============================================================
+END OF REPORT
+============================================================
