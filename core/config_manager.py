@@ -158,19 +158,49 @@ class ConfigManager:
 
     # === Profile Management ===
 
+    def _get_profile_path(self, name):
+        """Безопасное получение пути к файлу профиля"""
+        if not name or not isinstance(name, str):
+            return None
+
+        # Базовая проверка на запрещенные символы в имени
+        if os.path.sep in name or (os.path.altsep and os.path.altsep in name) or ".." in name:
+            return None
+
+        filename = f"{name}.json"
+        # Собираем путь и проверяем, что он остается внутри директории профилей
+        filepath = os.path.abspath(os.path.join(PROFILES_DIR, filename))
+        profiles_dir_abs = os.path.abspath(PROFILES_DIR)
+
+        # Более надежная проверка на вхождение в директорию
+        if os.path.commonpath([filepath, profiles_dir_abs]) != profiles_dir_abs:
+            return None
+
+        return filepath
+
     def save_profile(self, name):
         """Сохранение текущего конфига как профиль"""
         self._ensure_profiles_dir()
+
+        filepath = self._get_profile_path(name)
+        if not filepath:
+            print(f"Error: Invalid profile name '{name}'")
+            return False
+
         profile_data = self._deep_copy(self.config)
         profile_data['profiles']['active'] = name
 
-        filepath = os.path.join(PROFILES_DIR, f"{name}.json")
-        with open(filepath, 'w', encoding='utf-8') as f:
-            json.dump(profile_data, f, indent=4)
+        try:
+            with open(filepath, 'w', encoding='utf-8') as f:
+                json.dump(profile_data, f, indent=4)
+        except Exception as e:
+            print(f"Profile save error: {e}")
+            return False
 
         self.profiles[name] = profile_data
         self.set('profiles', 'active', name)
         print(f"Profile '{name}' saved")
+        return True
 
     def load_profile(self, name):
         """Загрузка профиля"""
@@ -179,11 +209,15 @@ class ConfigManager:
         elif name in self.profiles:
             self.config = self._deep_copy(self.profiles[name])
         else:
-            filepath = os.path.join(PROFILES_DIR, f"{name}.json")
-            if os.path.exists(filepath):
-                with open(filepath, 'r', encoding='utf-8') as f:
-                    self.config = json.load(f)
-                self.profiles[name] = self._deep_copy(self.config)
+            filepath = self._get_profile_path(name)
+            if filepath and os.path.exists(filepath):
+                try:
+                    with open(filepath, 'r', encoding='utf-8') as f:
+                        self.config = json.load(f)
+                    self.profiles[name] = self._deep_copy(self.config)
+                except Exception as e:
+                    print(f"Profile load error: {e}")
+                    return False
             else:
                 return False
 
@@ -196,12 +230,16 @@ class ConfigManager:
         if name == "default":
             return False
 
-        filepath = os.path.join(PROFILES_DIR, f"{name}.json")
-        if os.path.exists(filepath):
-            os.remove(filepath)
-            if name in self.profiles:
-                del self.profiles[name]
-            return True
+        filepath = self._get_profile_path(name)
+        if filepath and os.path.exists(filepath):
+            try:
+                os.remove(filepath)
+                if name in self.profiles:
+                    del self.profiles[name]
+                return True
+            except Exception as e:
+                print(f"Profile delete error: {e}")
+                return False
         return False
 
     def list_profiles(self):
