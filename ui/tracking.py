@@ -12,7 +12,7 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QLineEdit, QScrollArea, QMessageBox, QPlainTextEdit,
                              QSystemTrayIcon, QMenu, QDialog,
                              QGridLayout, QDoubleSpinBox, QGroupBox, QStyle)
-from PySide6.QtCore import Qt, QSize, Slot, QTimer, Signal, QPoint
+from PySide6.QtCore import Qt, QSize, Slot, QTimer, Signal, QPoint, QThread
 from PySide6.QtGui import QImage, QPixmap, QColor, QFont, QPalette, QKeySequence, QIcon, QAction, QShortcut
 
 from core.config_manager import ConfigManager
@@ -89,6 +89,19 @@ class QualityGraph(QFrame):
         # Заголовок
         painter.setPen(QColor(self.theme['text']))
         painter.drawText(5, 15, f"{self.title}: {self.data[-1] if self.data else 0:.1f}")
+
+
+class CameraScanner(QThread):
+    result_ready = Signal(list)
+
+    def run(self):
+        cameras = []
+        for i in range(5):
+            cap = cv2.VideoCapture(i)
+            if cap.isOpened():
+                cameras.append((f"CAM_NODE_{i}", i))
+                cap.release()
+        self.result_ready.emit(cameras)
 
 
 class UIBlock(QFrame):
@@ -643,11 +656,20 @@ class WebHTCApp(QMainWindow):
     def detect_cams(self):
         self.cam_list.blockSignals(True)
         self.cam_list.clear()
-        for i in range(5):
-            cap = cv2.VideoCapture(i)
-            if cap.isOpened():
-                self.cam_list.addItem(f"CAM_NODE_{i}", i)
-                cap.release()
+        self.cam_list.addItem("Scanning...", -1)
+
+        self.scanner = CameraScanner()
+        self.scanner.result_ready.connect(self.on_cams_detected)
+        self.scanner.start()
+
+    @Slot(list)
+    def on_cams_detected(self, cameras):
+        self.cam_list.clear()
+        for name, idx in cameras:
+            self.cam_list.addItem(name, idx)
+
+        if not cameras:
+            self.cam_list.addItem("NO_CAMERA_FOUND", -1)
 
         target_id = self.cfg.get('camera', 'device_id')
         idx = self.cam_list.findData(target_id)
@@ -656,9 +678,6 @@ class WebHTCApp(QMainWindow):
         else:
             self.cam_list.setCurrentIndex(0)
         self.cam_list.blockSignals(False)
-
-        if self.cam_list.count() == 0:
-            self.cam_list.addItem("NO_CAMERA_FOUND", -1)
 
     def switch_lang(self):
         self.cfg.set('visuals', 'language', "RU" if self.lang == "EN" else "EN")

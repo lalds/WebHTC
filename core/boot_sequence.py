@@ -6,11 +6,23 @@ import sys
 import time
 from PySide6.QtWidgets import (QDialog, QVBoxLayout, QLabel, QProgressBar, 
                              QFrame, QTextEdit)
-from PySide6.QtCore import Qt, QTimer, Signal, Slot
+from PySide6.QtCore import Qt, QTimer, Signal, Slot, QThread
 from PySide6.QtGui import QFont, QColor
 
 from core.diagnostics import SystemDiagnostics
 from ui.localization import TRANSLATIONS
+
+class CameraDiagWorker(QThread):
+    finished = Signal(tuple)
+
+    def __init__(self, diag):
+        super().__init__()
+        self.diag = diag
+
+    def run(self):
+        result = self.diag.check_cameras()
+        self.finished.emit(result)
+
 
 class BootSplash(QDialog):
     finished = Signal()
@@ -102,12 +114,20 @@ class BootSplash(QDialog):
             ok, msg = self.diag.check_vmt_driver()
             self.show_log(f"{self.t['boot_check']}VMT_PROTOCOL -> {'[OK]' if ok else '[!!!]'} {msg}")
         elif self.step == 4:
-            ok, msg = self.diag.check_cameras()
-            self.show_log(f"{self.t['boot_check']}OPTICAL_SENSORS -> {'[OK]' if ok else '[!!!]'} {msg}")
+            self.timer.stop()
+            self.worker = CameraDiagWorker(self.diag)
+            self.worker.finished.connect(self.on_diag_finished)
+            self.worker.start()
         elif self.step == 5:
             self.show_log(self.t["boot_done"])
             QTimer.singleShot(1000, self.finish)
             
+    @Slot(tuple)
+    def on_diag_finished(self, result):
+        ok, msg = result
+        self.show_log(f"{self.t['boot_check']}OPTICAL_SENSORS -> {'[OK]' if ok else '[!!!]'} {msg}")
+        self.timer.start(500)
+
     def finish(self):
         self.timer.stop()
         self.hide()
